@@ -24,7 +24,7 @@ const NoteButton = ({ note } : NoteButtonProps): JSX.Element => {
 
     return (
         <div>
-            <button onClick={() => playSound( {noteName, pitch, length} )}>
+            <button onClick={() => playSound( {noteName, pitch, length} )} className="btn bg-[#B20D30] text-white text-3xl">
                 {noteName}
             </button>
         </div>
