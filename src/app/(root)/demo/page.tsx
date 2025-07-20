@@ -3,7 +3,7 @@ import Form from 'next/form'
 import * as Tone from "tone";
 import Link from 'next/link';
 
-export default function earTraining() {
+export default function demo() {
   return (
     <>
       <h1 className="text-center text-5xl py-4">Piano</h1>
@@ -25,9 +25,6 @@ export default function earTraining() {
         <NoteButton noteName="B" pitch={4} length="8n" />
         <NoteButton noteName="C" pitch={5} length="8n" />
       </div>
-      <Link href="/" className="block text-center pt-3 text-2xl">
-        Go back to the home page!
-      </Link>
     </>
   )
 }

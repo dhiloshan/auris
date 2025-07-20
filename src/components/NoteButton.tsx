@@ -2,18 +2,9 @@
 
 import React, { JSX } from 'react';
 import * as Tone from "tone";
+import { playSound } from '@/lib/api/earTrainer';
+import { Note } from '@/types/earTrainer'
 
-export interface Note {
-    noteName: string,
-    pitch: number,
-    length: Tone.Unit.Time;
-}
-
-function playSound(note : Note): void {
-    const synth = new Tone.Synth().toDestination();
-    
-    synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length);
-}
 
 const NoteButton = ({ noteName, pitch, length  } : Note): JSX.Element => {
     return (
