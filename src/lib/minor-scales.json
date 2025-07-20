@@ -1,0 +1,66 @@
+{
+  "naturalKey": {
+    "minorKey": "Am",
+    "relativeMajor": "C",
+    "notes": ["A", "B", "C", "D", "E", "F", "G"]
+  },
+  "sharpKeys": [
+    {
+      "minorKey": "Em",
+      "relativeMajor": "G",
+      "notes": ["E", "F#", "G", "A", "B", "C", "D"]
+    },
+    {
+      "minorKey": "Bm",
+      "relativeMajor": "D",
+      "notes": ["B", "C#", "D", "E", "F#", "G", "A"]
+    },
+    {
+      "minorKey": "F#m",
+      "relativeMajor": "A",
+      "notes": ["F#", "G#", "A", "B", "C#", "D", "E"]
+    },
+    {
+      "minorKey": "C#m",
+      "relativeMajor": "E",
+      "notes": ["C#", "D#", "E", "F#", "G#", "A", "B"]
+    },
+    {
+      "minorKey": "G#m",
+      "relativeMajor": "B",
+      "notes": ["G#", "A#", "B", "C#", "D#", "E", "F#"]
+    },
+    {
+      "minorKey": "D#m",
+      "relativeMajor": "F#",
+      "notes": ["D#", "E#", "F#", "G#", "A#", "B", "C#"]
+    }
+  ],
+  "flatKeys": [
+    {
+      "minorKey": "Dm",
+      "relativeMajor": "F",
+      "notes": ["D", "E", "F", "G", "A", "Bb", "C"]
+    },
+    {
+      "minorKey": "Gm",
+      "relativeMajor": "Bb",
+      "notes": ["G", "A", "Bb", "C", "D", "Eb", "F"]
+    },
+    {
+      "minorKey": "Cm",
+      "relativeMajor": "Eb",
+      "notes": ["C", "D", "Eb", "F", "G", "Ab", "Bb"]
+    },
+    {
+      "minorKey": "Fm",
+      "relativeMajor": "Ab",
+      "notes": ["F", "G", "Ab", "Bb", "C", "Db", "Eb"]
+    },
+    {
+      "minorKey": "Bbm",
+      "relativeMajor": "Db",
+      "notes": ["Bb", "C", "Db", "Eb", "F", "Gb", "Ab"]
+    }
+  ]
+}
