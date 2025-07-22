@@ -29,6 +29,7 @@ const Page = () => {
     <>
         <div>Current scale : {scale || "not yet"}</div>
         <button onClick={handleClick} className="bg-black text-white rounded-2xl p-2 hover:bg-gray-700">New Scale</button>
+        
     </>
   );
 };
