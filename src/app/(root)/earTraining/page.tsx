@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { getMajorKey } from '@/lib/music-utils';
 import { playScale } from '@/lib/api/earTrainer';
 
