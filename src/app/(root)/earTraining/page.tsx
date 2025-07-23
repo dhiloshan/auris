@@ -10,6 +10,7 @@ const Page = () => {
 
   const handleClick = () => {
     let newScale = JSON.stringify(getMajorKey());
+    while(scale == newScale) newScale = JSON.stringify(getMajorKey());
     setScale(newScale);
   }
 

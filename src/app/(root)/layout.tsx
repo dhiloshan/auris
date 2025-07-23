@@ -1,10 +1,12 @@
-import Navbar from "@/components/Navbar";
+import SideBar from "@/components/Sidebar";
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode; }>) {
   return (
-    <main>
-        <Navbar />
-        {children}
-    </main> 
+    <div className="flex flex-1 h-full">
+        <SideBar />
+        <main className="flex-1">
+          {children}
+        </main>
+    </div> 
   )
 }
