@@ -2,13 +2,14 @@
 
 import { use, useState, useEffect } from 'react';
 import { getMajorKey } from '@/lib/music-utils';
-import { playScale } from '@/lib/api/earTrainer';
+import { playScale, testUser } from '@/lib/api/earTrainer';
+import { Button } from '@/components/ui/button';
 
 
 const Page = () => {
   const [scale, setScale] = useState<string | null>(null);
 
-  const handleClick = () => {
+  const handleClickScale = () => {
     let newScale = JSON.stringify(getMajorKey());
     while(scale == newScale) newScale = JSON.stringify(getMajorKey());
     setScale(newScale);
@@ -29,8 +30,8 @@ const Page = () => {
   return (
     <>
         <div>Current scale : {scale || "not yet"}</div>
-        <button onClick={handleClick} className="bg-black text-white rounded-2xl p-2 hover:bg-gray-700">New Scale</button>
-        
+        <Button onClick={handleClickScale}>New Scale</Button>
+        <Button onClick={testUser}>Test on interval</Button>
     </>
   );
 };

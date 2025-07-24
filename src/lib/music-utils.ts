@@ -6,4 +6,3 @@ export function getMajorKey() {
     let data = majorScales.sharpKeys[randomScale];
     return data;
 }
-

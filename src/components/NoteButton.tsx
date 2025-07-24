@@ -2,14 +2,14 @@
 
 import React, { JSX } from 'react';
 import * as Tone from "tone";
-import { playSound } from '@/lib/api/earTrainer';
+import { playSoundNow } from '@/lib/api/earTrainer';
 import { Note } from '@/types/earTrainer'
 
 
 const NoteButton = ({ noteName, pitch, length  } : Note): JSX.Element => {
     return (
         <div>
-            <button onClick={() => playSound( {noteName, pitch, length} )} className="btn bg-[#B20D30] text-white text-3xl">
+            <button onClick={() => playSoundNow( {noteName, pitch, length} )} className="btn bg-[#B20D30] text-white text-3xl">
                 {noteName}
             </button>
         </div>

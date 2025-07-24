@@ -2,44 +2,44 @@
   "naturalKey": {
     "majorKey": "C",
     "relativeMinor": "Am",
-    "notes": ["C", "D", "E", "F", "G", "A", "B"],
+    "notes": ["C", "D", "E", "F", "G", "A", "B", "C"],
     "keySignature": 0
   },
   "sharpKeys": [
     {
       "majorKey": "G",
       "relativeMinor": "Em",
-      "notes": ["G", "A", "B", "C", "D", "E", "F#"],
+      "notes": ["G", "A", "B", "C", "D", "E", "F#", "G"],
       "keySignature": 1
     },
     {
       "majorKey": "D",
       "relativeMinor": "Bm",
-      "notes": ["D", "E", "F#", "G", "A", "B", "C#"],
+      "notes": ["D", "E", "F#", "G", "A", "B", "C#", "D"],
       "keySignature": 2
     },
     {
       "majorKey": "A",
       "relativeMinor": "F#m",
-      "notes": ["A", "B", "C#", "D", "E", "F#", "G#"],
+      "notes": ["A", "B", "C#", "D", "E", "F#", "G#", "A"],
       "keySignature": 3
     },
     {
       "majorKey": "E",
       "relativeMinor": "C#m",
-      "notes": ["E", "F#", "G#", "A", "B", "C#", "D#"],
+      "notes": ["E", "F#", "G#", "A", "B", "C#", "D#", "E"],
       "keySignature": 4
     },
     {
       "majorKey": "B",
       "relativeMinor": "G#m",
-      "notes": ["B", "C#", "D#", "E", "F#", "G#", "A#"],
+      "notes": ["B", "C#", "D#", "E", "F#", "G#", "A#", "B"],
       "keySignature": 5
     },
     {
       "majorKey": "F#",
       "relativeMinor": "D#m",
-      "notes": ["F#", "G#", "A#", "B", "C#", "D#", "E#"],
+      "notes": ["F#", "G#", "A#", "B", "C#", "D#", "E#", "F#"],
       "keySignature": 6
     }
   ],
@@ -47,31 +47,31 @@
     {
       "majorKey": "F",
       "relativeMinor": "Dm",
-      "notes": ["F", "G", "A", "Bb", "C", "D", "E"],
+      "notes": ["F", "G", "A", "Bb", "C", "D", "E", "F"],
       "keySignature": 1
     },
     {
       "majorKey": "Bb",
       "relativeMinor": "Gm",
-      "notes": ["Bb", "C", "D", "Eb", "F", "G", "A"],
+      "notes": ["Bb", "C", "D", "Eb", "F", "G", "A", "Bb"],
       "keySignature": 2
     },
     {
       "majorKey": "Eb",
       "relativeMinor": "Cm",
-      "notes": ["Eb", "F", "G", "Ab", "Bb", "C", "D"],
+      "notes": ["Eb", "F", "G", "Ab", "Bb", "C", "D", "Eb"],
       "keySignature": 3
     },
     {
       "majorKey": "Ab",
       "relativeMinor": "Fm",
-      "notes": ["Ab", "Bb", "C", "Db", "Eb", "F", "G"],
+      "notes": ["Ab", "Bb", "C", "Db", "Eb", "F", "G", "Ab"],
       "keySignature": 4
     },
     {
       "majorKey": "Db",
       "relativeMinor": "Bbm",
-      "notes": ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"],
+      "notes": ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C", "Db"],
       "keySignature": 5
     }
   ]
