@@ -1,15 +1,14 @@
 "use client";
 
-import { use, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     getMajorKey, 
-    testUser, 
-    calculateInterval, 
-    getIntervalName,
     generateChordProgression,
     generateMelodicSequence,
     generateScaleRecognition,
-    generateRhythmPattern
+    generateRhythmPattern,
+    generateIntervalTestFromJSON,
+    getAllIntervalTypes
 } from '@/lib/music-utils';
 import { 
     playScale, 
@@ -19,6 +18,7 @@ import {
     playRhythmPattern 
 } from '@/lib/api/earTrainer';
 import { Note } from '@/types/earTrainer';
+import TrainingTips from '@/components/TrainingTips';
 
 type ExerciseType = 'intervals' | 'chords' | 'melody' | 'scales' | 'rhythm';
 
@@ -34,6 +34,11 @@ const Page = () => {
   const [result, setResult] = useState<string>('');
   const [score, setScore] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
+  const [allIntervalTypes, setAllIntervalTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    setAllIntervalTypes(getAllIntervalTypes());
+  }, []);
 
   const handleScaleClick = () => {
     let newScale = JSON.stringify(getMajorKey());
@@ -42,7 +47,7 @@ const Page = () => {
   }
 
   const handleIntervalTest = () => {
-    const test = testUser();
+    const test = generateIntervalTestFromJSON();
     setIntervalTest(test);
     setUserAnswer('');
     setResult('');
@@ -148,6 +153,20 @@ const Page = () => {
     }
   }
 
+  const handleOptionSelect = (selectedOption: string) => {
+    if (currentExercise === 'intervals') {
+      const isCorrect = selectedOption.toLowerCase() === intervalTest.answer.toLowerCase();
+      
+      setTotalAttempts(prev => prev + 1);
+      if (isCorrect) {
+        setScore(prev => prev + 1);
+        setResult('Correct! Well done!');
+      } else {
+        setResult(`Incorrect. The answer is: ${intervalTest.answer}`);
+      }
+    }
+  }
+
   const getCurrentTest = () => {
     switch (currentExercise) {
       case 'intervals': return intervalTest;
@@ -192,14 +211,13 @@ const Page = () => {
   }
 
   useEffect(() => {
-    if(scale){
-        try{
-            const notes = JSON.parse(scale).notes;
-            playScale(notes, 4, "8n");
-        }
-        catch{
-            console.log("Failed to parse the data.");
-        }
+    if (scale) {
+      try {
+        const notes = JSON.parse(scale).notes;
+        playScale(notes, 4, "8n");
+      } catch {
+        console.log("Failed to parse the data.");
+      }
     }
   }, [scale]);
 
@@ -256,19 +274,36 @@ const Page = () => {
                                 Play Audio
                             </button>
                             
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={userAnswer}
-                                    onChange={(e) => setUserAnswer(e.target.value)}
-                                    placeholder={`Enter your answer...`}
-                                    className="border p-3 rounded-lg flex-1"
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSubmitAnswer()}
-                                />
-                                <button onClick={handleSubmitAnswer} className="bg-purple-600 text-white rounded-lg p-3 hover:bg-purple-700">
-                                    Submit
-                                </button>
-                            </div>
+                            {currentExercise === 'intervals' ? (
+                                <div className="space-y-2">
+                                    <div className="text-sm text-gray-600 mb-2">Select the correct interval:</div>
+                                    <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto">
+                                        {allIntervalTypes.map((intervalType, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => handleOptionSelect(intervalType)}
+                                                className="p-2 text-sm border rounded-lg font-medium transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+                                            >
+                                                {intervalType.replace(/_/g, ' ')}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={userAnswer}
+                                        onChange={(e) => setUserAnswer(e.target.value)}
+                                        placeholder={`Enter your answer...`}
+                                        className="border p-3 rounded-lg flex-1"
+                                        onKeyPress={(e) => e.key === 'Enter' && handleSubmitAnswer()}
+                                    />
+                                    <button onClick={handleSubmitAnswer} className="bg-purple-600 text-white rounded-lg p-3 hover:bg-purple-700">
+                                        Submit
+                                    </button>
+                                </div>
+                            )}
                             
                             {result && (
                                 <div className={`p-3 rounded-lg ${
@@ -284,35 +319,7 @@ const Page = () => {
                 </div>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="text-xl font-bold mb-3">Training Tips</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                    <div>
-                        <h4 className="font-semibold text-blue-600">Intervals</h4>
-                        <p>Practice recognizing the distance between two notes. Start with perfect intervals (4th, 5th, octave).</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-green-600">Chords</h4>
-                        <p>Learn to distinguish major, minor, diminished, and augmented triads by their emotional quality.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-purple-600">Melody</h4>
-                        <p>Train your ear to recognize melodic patterns and sequences. Focus on the contour and direction.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-orange-600">Scales</h4>
-                        <p>Distinguish between major and minor scales. Major sounds bright, minor sounds darker.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-red-600">Rhythm</h4>
-                        <p>Practice recognizing rhythmic patterns. Count along and feel the pulse.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-indigo-600">Practice</h4>
-                        <p>Regular practice is key to developing your musical ear. Try different exercises daily!</p>
-                    </div>
-                </div>
-            </div>
+            <TrainingTips />
         </div>
     </>
   );

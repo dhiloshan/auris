@@ -22,7 +22,7 @@ export function playChord(notes: Note[]) {
     const synth = new Tone.Synth().toDestination();
     
     notes.forEach((note, i) => {
-        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length, Tone.now() + i * 0.1);
+        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, "2n", Tone.now() + i * 0.1);
     });
 }
 
