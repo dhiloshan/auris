@@ -5,3 +5,8 @@ export interface Note {
     pitch: number,
     length: Tone.Unit.Time;
 }
+
+export interface Interval {
+    quality: string,
+    distance: number
+}

@@ -22,16 +22,8 @@ export function testUser(){
     let idx1 = Math.round(Math.random() * 7), idx2 = Math.round(Math.random() * 7);
     let scale = getMajorKey().notes;
 
-    let note1 : Note = {
-        noteName: scale[idx1],
-        pitch: 4,
-        length: "4n"
-    };
-    let note2 : Note = {
-        noteName: scale[idx2],
-        pitch: 4,
-        length: "4n"
-    };
+    let note1 : Note = { noteName: scale[idx1], pitch: 4, length: "4n" };
+    let note2 : Note = { noteName: scale[idx2], pitch: 4, length: "4n" };
     playSoundNow(note1); 
     setTimeout(() => {
         console.log("This message appears after 1 seconds.");

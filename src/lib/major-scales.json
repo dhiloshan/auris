@@ -1,10 +1,10 @@
 {
-  "naturalKey": {
+  "naturalKey": [{
     "majorKey": "C",
     "relativeMinor": "Am",
     "notes": ["C", "D", "E", "F", "G", "A", "B", "C"],
     "keySignature": 0
-  },
+  }],
   "sharpKeys": [
     {
       "majorKey": "G",
