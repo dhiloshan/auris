@@ -2,43 +2,112 @@ import * as Tone from "tone";
 import { Note } from '@/types/earTrainer'
 import { getMajorKey } from "../music-utils";
 
-export function playSoundNow(note : Note) {
-    const synth = new Tone.Synth().toDestination();
+let piano: Tone.Sampler | null = null;
+let synth: Tone.Synth | null = null;
+let pianoLoaded = false;
+let pianoLoading = false;
+
+const getInstrument = () => {
+    if (piano && pianoLoaded && piano.loaded) {
+        return piano;
+    }
     
-    synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length);
+    if (!synth) {
+        synth = new Tone.Synth().toDestination();
+    }
+    return synth;
+};
+
+const initPiano = async () => {
+    if (pianoLoading) return;
+    pianoLoading = true;
+    
+    try {
+        piano = new Tone.Sampler({
+            urls: {
+                "C4": "C4.mp3",
+                "D#4": "Ds4.mp3", 
+                "F#4": "Fs4.mp3",
+                "A4": "A4.mp3",
+            },
+            baseUrl: "https://tonejs.github.io/audio/salamander/",
+        }).toDestination();
+        
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        while (!piano.loaded && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (piano.loaded) {
+            pianoLoaded = true;
+        } else {
+            console.log("Piano samples failed to load, using synth instead");
+            piano = null;
+            pianoLoaded = false;
+        }
+    } catch (error) {
+        console.log("Piano samples failed to load, using synth instead");
+        piano = null;
+        pianoLoaded = false;
+    }
+    pianoLoading = false;
+};
+
+export async function playSoundNow(note : Note) {
+    if (!pianoLoaded && !pianoLoading) {
+        await initPiano();
+    }
+    
+    const instrument = getInstrument();
+    instrument.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length);
 }
 
-export function playScale(scale : string[], pitch : number, length : Tone.Unit.Time)  {
-    const synth = new Tone.Synth().toDestination();
-
+export async function playScale(scale : string[], pitch : number, length : Tone.Unit.Time)  {
+    if (!pianoLoaded && !pianoLoading) {
+        await initPiano();
+    }
+    
+    const instrument = getInstrument();
     scale.forEach((note, i) => {
-        synth.triggerAttackRelease(`${note}${pitch}`, length, Tone.now() + i * 0.5);
+        instrument.triggerAttackRelease(`${note}${pitch}`, length, Tone.now() + i * 0.5);
         if(note[0] == 'B') pitch++;
     });
-    synth.triggerAttackRelease(`${scale[0]}${pitch}`, length, Tone.now() + 3.5);
+    instrument.triggerAttackRelease(`${scale[0]}${pitch}`, length, Tone.now() + 3.5);
 }
 
-export function playChord(notes: Note[]) {
-    const synth = new Tone.Synth().toDestination();
+export async function playChord(notes: Note[]) {
+    if (!pianoLoaded && !pianoLoading) {
+        await initPiano();
+    }
     
+    const instrument = getInstrument();
     notes.forEach((note, i) => {
-        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, "2n", Tone.now() + i * 0.1);
+        instrument.triggerAttackRelease(`${note.noteName}${note.pitch}`, "2n", Tone.now() + i * 0.1);
     });
 }
 
-export function playMelodicSequence(notes: Note[]) {
-    const synth = new Tone.Synth().toDestination();
+export async function playMelodicSequence(notes: Note[]) {
+    if (!pianoLoaded && !pianoLoading) {
+        await initPiano();
+    }
     
+    const instrument = getInstrument();
     notes.forEach((note, i) => {
-        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length, Tone.now() + i * 0.8);
+        instrument.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length, Tone.now() + i * 0.8);
     });
 }
 
-export function playRhythmPattern(pattern: string[]) {
-    const synth = new Tone.Synth().toDestination();
+export async function playRhythmPattern(pattern: string[]) {
+    if (!pianoLoaded && !pianoLoading) {
+        await initPiano();
+    }
     
+    const instrument = getInstrument();
     pattern.forEach((rhythm, i) => {
-        synth.triggerAttackRelease("C4", rhythm, Tone.now() + i * 0.5);
+        instrument.triggerAttackRelease("C4", rhythm, Tone.now() + i * 0.5);
     });
 }
 

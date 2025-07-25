@@ -35,6 +35,8 @@ const Page = () => {
   const [score, setScore] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
   const [allIntervalTypes, setAllIntervalTypes] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [playedNotes, setPlayedNotes] = useState<string>('');
 
   useEffect(() => {
     setAllIntervalTypes(getAllIntervalTypes());
@@ -51,6 +53,8 @@ const Page = () => {
     setIntervalTest(test);
     setUserAnswer('');
     setResult('');
+    setSubmitted(false);
+    setPlayedNotes('');
   }
 
   const handleChordTest = () => {
@@ -58,6 +62,8 @@ const Page = () => {
     setChordTest(test);
     setUserAnswer('');
     setResult('');
+    setSubmitted(false);
+    setPlayedNotes('');
   }
 
   const handleMelodyTest = () => {
@@ -65,6 +71,8 @@ const Page = () => {
     setMelodyTest(test);
     setUserAnswer('');
     setResult('');
+    setSubmitted(false);
+    setPlayedNotes('');
   }
 
   const handleScaleTest = () => {
@@ -72,6 +80,8 @@ const Page = () => {
     setScaleTest(test);
     setUserAnswer('');
     setResult('');
+    setSubmitted(false);
+    setPlayedNotes('');
   }
 
   const handleRhythmTest = () => {
@@ -79,39 +89,48 @@ const Page = () => {
     setRhythmTest(test);
     setUserAnswer('');
     setResult('');
+    setSubmitted(false);
+    setPlayedNotes('');
   }
 
-  const handlePlayInterval = () => {
+  const handlePlayInterval = async () => {
     if (intervalTest) {
-      playSoundNow(intervalTest.note1);
-      setTimeout(() => {
-        playSoundNow(intervalTest.note2);
+      setPlayedNotes(`${intervalTest.note1.noteName}${intervalTest.note1.pitch} - ${intervalTest.note2.noteName}${intervalTest.note2.pitch}`);
+      await playSoundNow(intervalTest.note1);
+      setTimeout(async () => {
+        await playSoundNow(intervalTest.note2);
       }, 1000);
     }
   }
 
-  const handlePlayChord = () => {
+  const handlePlayChord = async () => {
     if (chordTest) {
-      playChord(chordTest.notes);
+      const noteNames = chordTest.notes.map((note: Note) => `${note.noteName}${note.pitch}`).join(' - ');
+      setPlayedNotes(noteNames);
+      await playChord(chordTest.notes);
     }
   }
 
-  const handlePlayMelody = () => {
+  const handlePlayMelody = async () => {
     if (melodyTest) {
-      playMelodicSequence(melodyTest.notes);
+      const noteNames = melodyTest.notes.map((note: Note) => `${note.noteName}${note.pitch}`).join(' - ');
+      setPlayedNotes(noteNames);
+      await playMelodicSequence(melodyTest.notes);
     }
   }
 
-  const handlePlayScale = () => {
+  const handlePlayScale = async () => {
     if (scaleTest) {
       const scaleNotes = scaleTest.notes.map((note: Note) => note.noteName);
-      playScale(scaleNotes, 4, "4n");
+      setPlayedNotes(scaleNotes.join(' - '));
+      await playScale(scaleNotes, 4, "4n");
     }
   }
 
-  const handlePlayRhythm = () => {
+  const handlePlayRhythm = async () => {
     if (rhythmTest) {
-      playRhythmPattern(rhythmTest.pattern);
+      setPlayedNotes(rhythmTest.pattern.join(' - '));
+      await playRhythmPattern(rhythmTest.pattern);
     }
   }
 
@@ -190,13 +209,13 @@ const Page = () => {
     }
   }
 
-  const handlePlayCurrent = () => {
+  const handlePlayCurrent = async () => {
     switch (currentExercise) {
-      case 'intervals': handlePlayInterval(); break;
-      case 'chords': handlePlayChord(); break;
-      case 'melody': handlePlayMelody(); break;
-      case 'scales': handlePlayScale(); break;
-      case 'rhythm': handlePlayRhythm(); break;
+      case 'intervals': await handlePlayInterval(); break;
+      case 'chords': await handlePlayChord(); break;
+      case 'melody': await handlePlayMelody(); break;
+      case 'scales': await handlePlayScale(); break;
+      case 'rhythm': await handlePlayRhythm(); break;
     }
   }
 
@@ -325,4 +344,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Page; 
