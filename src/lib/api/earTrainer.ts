@@ -18,6 +18,30 @@ export function playScale(scale : string[], pitch : number, length : Tone.Unit.T
     synth.triggerAttackRelease(`${scale[0]}${pitch}`, length, Tone.now() + 3.5);
 }
 
+export function playChord(notes: Note[]) {
+    const synth = new Tone.Synth().toDestination();
+    
+    notes.forEach((note, i) => {
+        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length, Tone.now() + i * 0.1);
+    });
+}
+
+export function playMelodicSequence(notes: Note[]) {
+    const synth = new Tone.Synth().toDestination();
+    
+    notes.forEach((note, i) => {
+        synth.triggerAttackRelease(`${note.noteName}${note.pitch}`, note.length, Tone.now() + i * 0.8);
+    });
+}
+
+export function playRhythmPattern(pattern: string[]) {
+    const synth = new Tone.Synth().toDestination();
+    
+    pattern.forEach((rhythm, i) => {
+        synth.triggerAttackRelease("C4", rhythm, Tone.now() + i * 0.5);
+    });
+}
+
 export function testUser(){
     let idx1 = Math.round(Math.random() * 7), idx2 = Math.round(Math.random() * 7);
     let scale = getMajorKey().notes;
