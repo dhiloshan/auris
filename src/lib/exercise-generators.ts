@@ -1,7 +1,7 @@
 import majorScales from '@/lib/major-scales.json';
 import minorScales from '@/lib/minor-scales.json';
 import { Note } from '@/types/earTrainer';
-import { CHROMATIC_SCALE, CHORD_TYPES, RHYTHM_PATTERNS } from './constants';
+import { CHROMATIC_SCALE, CHORD_TYPES } from './constants';
 
 export function getMajorKey() {
     let randomScale = Math.round(Math.random() * 5);
@@ -71,7 +71,3 @@ export function generateScaleRecognition(): { notes: Note[], scaleType: string, 
         answer: randomScale.type
     };
 }
-
-export function generateRhythmPattern(): { pattern: string[], answer: string } {
-    return RHYTHM_PATTERNS[Math.floor(Math.random() * RHYTHM_PATTERNS.length)];
-} 

@@ -6,7 +6,6 @@ import {
     generateChordProgression,
     generateMelodicSequence,
     generateScaleRecognition,
-    generateRhythmPattern,
     generateIntervalTestFromJSON,
     getAllIntervalTypes
 } from '@/lib/music-utils';
@@ -14,13 +13,12 @@ import {
     playScale, 
     playSoundNow, 
     playChord, 
-    playMelodicSequence, 
-    playRhythmPattern 
+    playMelodicSequence
 } from '@/lib/api/earTrainer';
 import { Note } from '@/types/earTrainer';
 import TrainingTips from '@/components/TrainingTips';
 
-type ExerciseType = 'intervals' | 'chords' | 'melody' | 'scales' | 'rhythm';
+type ExerciseType = 'intervals' | 'chords' | 'melody' | 'scales';
 
 const Page = () => {
   const [currentExercise, setCurrentExercise] = useState<ExerciseType>('intervals');
@@ -29,7 +27,6 @@ const Page = () => {
   const [chordTest, setChordTest] = useState<any>(null);
   const [melodyTest, setMelodyTest] = useState<any>(null);
   const [scaleTest, setScaleTest] = useState<any>(null);
-  const [rhythmTest, setRhythmTest] = useState<any>(null);
   const [userAnswer, setUserAnswer] = useState<string>('');
   const [result, setResult] = useState<string>('');
   const [score, setScore] = useState<number>(0);
@@ -84,15 +81,6 @@ const Page = () => {
     setPlayedNotes('');
   }
 
-  const handleRhythmTest = () => {
-    const test = generateRhythmPattern();
-    setRhythmTest(test);
-    setUserAnswer('');
-    setResult('');
-    setSubmitted(false);
-    setPlayedNotes('');
-  }
-
   const handlePlayInterval = async () => {
     if (intervalTest) {
       setPlayedNotes(`${intervalTest.note1.noteName}${intervalTest.note1.pitch} - ${intervalTest.note2.noteName}${intervalTest.note2.pitch}`);
@@ -127,15 +115,8 @@ const Page = () => {
     }
   }
 
-  const handlePlayRhythm = async () => {
-    if (rhythmTest) {
-      setPlayedNotes(rhythmTest.pattern.join(' - '));
-      await playRhythmPattern(rhythmTest.pattern);
-    }
-  }
-
   const handleSubmitAnswer = () => {
-    if (!userAnswer.trim()) return;
+    if (!userAnswer.trim() || submitted) return;
 
     let isCorrect = false;
     let correctAnswer = '';
@@ -157,12 +138,9 @@ const Page = () => {
         isCorrect = userAnswer.toLowerCase() === scaleTest.answer.toLowerCase();
         correctAnswer = scaleTest.answer;
         break;
-      case 'rhythm':
-        isCorrect = userAnswer.toLowerCase() === rhythmTest.answer.toLowerCase();
-        correctAnswer = rhythmTest.answer;
-        break;
     }
 
+    setSubmitted(true);
     setTotalAttempts(prev => prev + 1);
     if (isCorrect) {
       setScore(prev => prev + 1);
@@ -173,9 +151,10 @@ const Page = () => {
   }
 
   const handleOptionSelect = (selectedOption: string) => {
-    if (currentExercise === 'intervals') {
+    if (currentExercise === 'intervals' && !submitted) {
       const isCorrect = selectedOption.toLowerCase() === intervalTest.answer.toLowerCase();
       
+      setSubmitted(true);
       setTotalAttempts(prev => prev + 1);
       if (isCorrect) {
         setScore(prev => prev + 1);
@@ -192,7 +171,6 @@ const Page = () => {
       case 'chords': return chordTest;
       case 'melody': return melodyTest;
       case 'scales': return scaleTest;
-      case 'rhythm': return rhythmTest;
     }
   }
 
@@ -205,7 +183,6 @@ const Page = () => {
       case 'chords': return 'What type of chord is this?';
       case 'melody': return 'What notes did you hear? (e.g., C - D - E)';
       case 'scales': return 'Is this a Major or Minor scale?';
-      case 'rhythm': return 'What rhythm pattern did you hear?';
     }
   }
 
@@ -215,7 +192,6 @@ const Page = () => {
       case 'chords': await handlePlayChord(); break;
       case 'melody': await handlePlayMelody(); break;
       case 'scales': await handlePlayScale(); break;
-      case 'rhythm': await handlePlayRhythm(); break;
     }
   }
 
@@ -225,7 +201,6 @@ const Page = () => {
       case 'chords': handleChordTest(); break;
       case 'melody': handleMelodyTest(); break;
       case 'scales': handleScaleTest(); break;
-      case 'rhythm': handleRhythmTest(); break;
     }
   }
 
@@ -233,7 +208,7 @@ const Page = () => {
     if (scale) {
       try {
         const notes = JSON.parse(scale).notes;
-        playScale(notes, 4, "8n");
+        playScale(notes, 4, "4n");
       } catch {
         console.log("Failed to parse the data.");
       }
@@ -255,7 +230,7 @@ const Page = () => {
             </div>
 
             <div className="flex space-x-2 mb-6">
-                {(['intervals', 'chords', 'melody', 'scales', 'rhythm'] as ExerciseType[]).map(exercise => (
+                {(['intervals', 'chords', 'melody', 'scales'] as ExerciseType[]).map(exercise => (
                     <button
                         key={exercise}
                         onClick={() => setCurrentExercise(exercise)}
@@ -301,7 +276,12 @@ const Page = () => {
                                             <button
                                                 key={index}
                                                 onClick={() => handleOptionSelect(intervalType)}
-                                                className="p-2 text-sm border rounded-lg font-medium transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+                                                disabled={submitted}
+                                                className={`p-2 text-sm border rounded-lg font-medium transition-colors ${
+                                                    submitted 
+                                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
+                                                }`}
                                             >
                                                 {intervalType.replace(/_/g, ' ')}
                                             </button>
@@ -315,11 +295,22 @@ const Page = () => {
                                         value={userAnswer}
                                         onChange={(e) => setUserAnswer(e.target.value)}
                                         placeholder={`Enter your answer...`}
-                                        className="border p-3 rounded-lg flex-1"
+                                        disabled={submitted}
+                                        className={`border p-3 rounded-lg flex-1 ${
+                                            submitted ? 'bg-gray-100 text-gray-500' : ''
+                                        }`}
                                         onKeyPress={(e) => e.key === 'Enter' && handleSubmitAnswer()}
                                     />
-                                    <button onClick={handleSubmitAnswer} className="bg-purple-600 text-white rounded-lg p-3 hover:bg-purple-700">
-                                        Submit
+                                    <button 
+                                        onClick={handleSubmitAnswer} 
+                                        disabled={submitted}
+                                        className={`rounded-lg p-3 ${
+                                            submitted 
+                                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                                                : 'bg-purple-600 text-white hover:bg-purple-700'
+                                        }`}
+                                    >
+                                        {submitted ? 'Submitted' : 'Submit'}
                                     </button>
                                 </div>
                             )}
@@ -331,6 +322,13 @@ const Page = () => {
                                         : 'bg-red-100 text-red-800 border border-red-200'
                                 }`}>
                                     {result}
+                                </div>
+                            )}
+                            
+                            {submitted && playedNotes && (
+                                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                    <div className="text-sm font-medium text-blue-800 mb-1">Notes that were played:</div>
+                                    <div className="text-blue-700">{playedNotes}</div>
                                 </div>
                             )}
                         </div>

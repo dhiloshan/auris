@@ -100,16 +100,7 @@ export async function playMelodicSequence(notes: Note[]) {
     });
 }
 
-export async function playRhythmPattern(pattern: string[]) {
-    if (!pianoLoaded && !pianoLoading) {
-        await initPiano();
-    }
-    
-    const instrument = getInstrument();
-    pattern.forEach((rhythm, i) => {
-        instrument.triggerAttackRelease("C4", rhythm, Tone.now() + i * 0.5);
-    });
-}
+
 
 export function testUser(){
     let idx1 = Math.round(Math.random() * 7), idx2 = Math.round(Math.random() * 7);

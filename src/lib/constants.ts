@@ -13,13 +13,7 @@ export const CHORD_TYPES = [
     { name: 'Augmented Triad', intervals: [0, 4, 8], answer: 'Augmented' }
 ];
 
-export const RHYTHM_PATTERNS = [
-    { pattern: ['4n', '4n', '4n', '4n'], answer: 'Four quarter notes' },
-    { pattern: ['2n', '2n'], answer: 'Two half notes' },
-    { pattern: ['8n', '8n', '8n', '8n', '8n', '8n', '8n', '8n'], answer: 'Eight eighth notes' },
-    { pattern: ['4n', '8n', '8n', '4n'], answer: 'Quarter, two eighths, quarter' },
-    { pattern: ['8n', '8n', '4n', '4n'], answer: 'Two eighths, two quarters' }
-];
+
 
 export const QUALITY_ORDER = ['diminished', 'minor', 'major', 'augmented'];
 

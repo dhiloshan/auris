@@ -132,9 +132,9 @@ export function generateIntervalTestFromJSON(): {
     let note2Pitch = 4;
     
     if (targetIndex < rootIndex) {
-        note2Pitch = 5;
+        note2Pitch = 5;  
     } else if (targetIndex === rootIndex) {
-        note2Pitch = 5;
+        note2Pitch = 5; 
     }
     
     const note1: Note = {
