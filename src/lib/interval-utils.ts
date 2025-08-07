@@ -1,173 +1,82 @@
-import intervals from '@/lib/intervals.json';
 import { Note } from '@/types/earTrainer';
-import { CHROMATIC_SCALE, INTERVAL_NAMES, QUALITY_ORDER, DISTANCE_ORDER } from './constants';
+import { CHROMATIC_SCALE, semitoneToInterval, INTERVAL_NAMES, QUALITY_ORDER, DISTANCE_ORDER, FLAT_CHROMATIC_SCALE, NOTE_LETTERS} from './constants';
+import { playIntervalSound } from './api/earTrainer';
+import NoteButton from '@/components/NoteButton';
+import majorScales from '@/lib/major-scales.json';
 
-export function calculateInterval(note1: Note, note2: Note): number {
-    const note1Name = note1.noteName.replace(/\d/g, '');
-    const note2Name = note2.noteName.replace(/\d/g, '');
-    
-    const note1Index = CHROMATIC_SCALE.indexOf(note1Name);
-    const note2Index = CHROMATIC_SCALE.indexOf(note2Name);
-    
-    if (note1Index === -1 || note2Index === -1) {
-        return -1;
+export function intervalDist(interval: string) {
+    if (interval === 'Unison') return 1;
+    const distance = interval.split(' ')[1];
+    switch (distance) {
+        case 'Second': return 2;
+        case 'Third': return 3;
+        case 'Fourth': return 4;
+        case 'Fifth': return 5;
+        case 'Sixth': return 6;
+        case 'Seventh': return 7;
+        case 'Octave': return 8;
+        case 'Ninth': return 9;
+        default: 
+            console.log("Me: Interval Length isn't Valid");
+            return undefined;
     }
-    
-    let interval = note2Index - note1Index;
-    
-    if (interval < 0) {
-        interval += 12;
-    }
-    
-    return interval;
 }
 
-export function getIntervalName(interval: number): string {
-    return INTERVAL_NAMES[interval] || 'Unknown';
-}
-
-export function generateRandomInterval(): { note1: Note, note2: Note, interval: number, intervalName: string } {
-    const note1Index = Math.floor(Math.random() * CHROMATIC_SCALE.length);
-    const note1Name = CHROMATIC_SCALE[note1Index];
-    
-    const interval = Math.floor(Math.random() * 12) + 1;
-    
-    const note2Index = (note1Index + interval) % 12;
-    const note2Name = CHROMATIC_SCALE[note2Index];
-    
-    const note1: Note = {
-        noteName: note1Name,
-        pitch: 4,
-        length: "4n"
-    };
-    
-    const note2: Note = {
-        noteName: note2Name,
-        pitch: 4,
-        length: "4n"
-    };
-    
-    return {
-        note1,
-        note2,
-        interval,
-        intervalName: getIntervalName(interval)
-    };
-}
-
-export function getAllIntervalTypes(): string[] {
-    const intervalTypes = new Set<string>();
-    
-    Object.values(intervals).forEach((rootNote: any) => {
-        Object.values(rootNote).forEach((intervalArray: any) => {
-            if (Array.isArray(intervalArray)) {
-                intervalArray.forEach((interval: string) => {
-                    intervalTypes.add(interval);
-                });
-            }
-        });
-    });
-    
-    const intervalArray = Array.from(intervalTypes);
-    
-    return intervalArray.sort((a, b) => {
-        const getQuality = (interval: string) => {
-            if (interval.includes('diminished')) return 'diminished';
-            if (interval.includes('minor')) return 'minor';
-            if (interval.includes('major')) return 'major';
-            if (interval.includes('augmented')) return 'augmented';
-            if (interval.includes('perfect')) return 'perfect';
-            return 'unison';
-        };
-        
-        const getDistance = (interval: string) => {
-            for (const distance of DISTANCE_ORDER) {
-                if (interval.includes(distance)) return distance;
-            }
-            return 'unison';
-        };
-        
-        const aQuality = getQuality(a);
-        const bQuality = getQuality(b);
-        const aDistance = getDistance(a);
-        const bDistance = getDistance(b);
-        
-        const distanceComparison = DISTANCE_ORDER.indexOf(aDistance) - DISTANCE_ORDER.indexOf(bDistance);
-        if (distanceComparison !== 0) return distanceComparison;
-        
-        const aQualityIndex = QUALITY_ORDER.indexOf(aQuality);
-        const bQualityIndex = QUALITY_ORDER.indexOf(bQuality);
-        
-        if (aQuality === 'perfect' && bQuality !== 'perfect') return 1;
-        if (bQuality === 'perfect' && aQuality !== 'perfect') return -1;
-        if (aQuality === 'perfect' && bQuality === 'perfect') return 0;
-        
-        return aQualityIndex - bQualityIndex;
-    });
-}
-
-export function generateIntervalTestFromJSON(): { 
-    question: string, 
-    answer: string, 
-    note1: Note, 
-    note2: Note, 
-    options: string[],
-    allOptions: string[]
-} {
-    const rootNotes = Object.keys(intervals);
-    const randomRoot = rootNotes[Math.floor(Math.random() * rootNotes.length)];
-    const rootNoteData = (intervals as any)[randomRoot];
-    const targetNotes = Object.keys(rootNoteData);
-    
-    const nonRootTargets = targetNotes.filter(note => note !== randomRoot);
-    const randomTarget = nonRootTargets[Math.floor(Math.random() * nonRootTargets.length)];
-    
-    const intervalArray = rootNoteData[randomTarget];
-    const correctInterval = Array.isArray(intervalArray) ? intervalArray[0] : intervalArray;
-    
-    const rootIndex = CHROMATIC_SCALE.indexOf(randomRoot);
-    const targetIndex = CHROMATIC_SCALE.indexOf(randomTarget);
-    
-    let note1Pitch = 4;
-    let note2Pitch = 4;
-    
-    if (targetIndex < rootIndex) {
-        note2Pitch = 5;  
-    } else if (targetIndex === rootIndex) {
-        note2Pitch = 5; 
+export function isPerfectInterval(intervalLen : number) : boolean {
+    intervalLen %= 8; // accounts for compound interval
+    if (intervalLen == 1 || intervalLen == 4 || intervalLen == 5 || intervalLen == 0) {
+        return true;
     }
+    else return false;  
+}
+
+export function genInterval(root : Note, interval : string) : Note {
+    // for chord generation
+    let rootIndex = NOTE_LETTERS.indexOf(root.noteName);
+    let upperNoteName = (rootIndex + (intervalDist(interval) || 0)) % 7;
+    let upperPitchIncrease = Math.floor((rootIndex + (intervalDist(interval) || 0)) / 7);
+
+   
+    // if the root is a flat note, then the upper note can be natural or flat
+    // if the root note is a natural note, then the upper note can be flat, natural, or sharp
+    /*
+    For any note, there is 5 options(3 usually)
+    Note double flat, Note flat, Note natural, Note Sharp, Note Double Sharp
+    Have an array for C D E ... B so we can find the note to use
+    In terms of whether to put a sharp or flat and how much, use this:
+
+    refer to the major scales json to make a major or perfect interval
+    let sharp be a +1 and a flat be -1 and natural be 0
+    a augmented 6th requires a plus 1, so we add 1 to the score
+
+    if the score is -2: two flats, -1: one flat, 0: nothing, +1: 1 sharp, +2: 2 sharps
+    */
+}
+
+export function genRandomInterval() : string {
+    let rootIndex = Math.floor(Math.random() * FLAT_CHROMATIC_SCALE.length);
+    let root : Note = {noteName: FLAT_CHROMATIC_SCALE[rootIndex], 
+        pitch: 2 + Math.round(Math.random() * 2),
+        length: "1n"};
+    // generate a major (perfect), minor, diminished, or augmented interval
+    // do NOT generate a doubly augmented or doubly diminished interval
+
+    let semitones = Math.round(Math.random() * 14); // interval length [1,9] uses 0 to 14 semitones
+    let intervalName = semitoneToInterval[semitones];
     
-    const note1: Note = {
-        noteName: randomRoot,
-        pitch: note1Pitch,
-        length: "4n"
-    };
+    let upperIndex = (rootIndex + semitones) % 12;
+    let upper : Note = {noteName: FLAT_CHROMATIC_SCALE[upperIndex],
+        pitch: root.pitch,
+        length: "1n" };
+
+    if (rootIndex + semitones >= 24) upper.pitch += 2;
+    else if (rootIndex + semitones >= 12) upper.pitch++;    
+
+    playIntervalSound(root, upper, "ascending melodic");
+    setTimeout(() => playIntervalSound(root, upper, "harmonic"), 2500);
+
+    console.log(`This is the root note: ${root.noteName} with pitch ${root.pitch}`); 
+    console.log(`This is the upper note: ${upper.noteName} with pitch ${upper.pitch}`);
     
-    const note2: Note = {
-        noteName: randomTarget,
-        pitch: note2Pitch,
-        length: "4n"
-    };
-    
-    const allOptions = getAllIntervalTypes();
-    
-    const testOptions = [correctInterval];
-    const remainingOptions = allOptions.filter(option => option !== correctInterval);
-    
-    for (let i = 0; i < 3 && remainingOptions.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * remainingOptions.length);
-        testOptions.push(remainingOptions[randomIndex]);
-        remainingOptions.splice(randomIndex, 1);
-    }
-    
-    const shuffledOptions = testOptions.sort(() => Math.random() - 0.5);
-    
-    return {
-        question: `Listen carefully to the two notes. What interval do you hear?`,
-        answer: correctInterval,
-        note1,
-        note2,
-        options: shuffledOptions,
-        allOptions
-    };
-} 
+    return intervalName;
+}

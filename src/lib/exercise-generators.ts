@@ -9,26 +9,6 @@ export function getMajorKey() {
     return data;
 }
 
-export function generateChordProgression(): { notes: Note[], chordType: string, answer: string } {
-    const rootIndex = Math.floor(Math.random() * CHROMATIC_SCALE.length);
-    const chordType = CHORD_TYPES[Math.floor(Math.random() * CHORD_TYPES.length)];
-    
-    const notes: Note[] = chordType.intervals.map(interval => {
-        const noteIndex = (rootIndex + interval) % 12;
-        return {
-            noteName: CHROMATIC_SCALE[noteIndex],
-            pitch: 4,
-            length: "2n"
-        };
-    });
-    
-    return {
-        notes,
-        chordType: chordType.name,
-        answer: chordType.answer
-    };
-}
-
 export function generateMelodicSequence(length: number = 4): { notes: Note[], sequence: string } {
     const notes: Note[] = [];
     let currentIndex = Math.floor(Math.random() * CHROMATIC_SCALE.length);
@@ -50,24 +30,3 @@ export function generateMelodicSequence(length: number = 4): { notes: Note[], se
     return { notes, sequence };
 }
 
-export function generateScaleRecognition(): { notes: Note[], scaleType: string, answer: string } {
-    const scales = [
-        ...majorScales.sharpKeys.map(s => ({ ...s, type: 'Major' })),
-        ...majorScales.flatKeys.map(s => ({ ...s, type: 'Major' })),
-        ...minorScales.sharpKeys.map(s => ({ ...s, type: 'Minor' })),
-        ...minorScales.flatKeys.map(s => ({ ...s, type: 'Minor' }))
-    ];
-    
-    const randomScale = scales[Math.floor(Math.random() * scales.length)];
-    const notes: Note[] = randomScale.notes.map(noteName => ({
-        noteName,
-        pitch: 4,
-        length: "4n"
-    }));
-    
-    return {
-        notes,
-        scaleType: randomScale.type,
-        answer: randomScale.type
-    };
-}
